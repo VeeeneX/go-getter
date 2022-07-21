@@ -301,39 +301,7 @@ func findRemoteDefaultBranch(ctx context.Context, u *url.URL) string {
 
 // setupGitEnv sets up the environment for the given command. This is used to
 // pass configuration data to git and ssh and enables advanced cloning methods.
-func setupGitEnv(cmd *exec.Cmd, sshKeyFile string) {
-	const gitSSHCommand = "GIT_SSH_COMMAND="
-	var sshCmd []string
-
-	// If we have an existing GIT_SSH_COMMAND, we need to append our options.
-	// We will also remove our old entry to make sure the behavior is the same
-	// with versions of Go < 1.9.
-	env := os.Environ()
-	for i, v := range env {
-		if strings.HasPrefix(v, gitSSHCommand) && len(v) > len(gitSSHCommand) {
-			sshCmd = []string{v}
-
-			env[i], env[len(env)-1] = env[len(env)-1], env[i]
-			env = env[:len(env)-1]
-			break
-		}
-	}
-
-	if len(sshCmd) == 0 {
-		sshCmd = []string{gitSSHCommand + "ssh"}
-	}
-
-	if sshKeyFile != "" {
-		// We have an SSH key temp file configured, tell ssh about this.
-		if runtime.GOOS == "windows" {
-			sshKeyFile = strings.Replace(sshKeyFile, `\`, `/`, -1)
-		}
-		sshCmd = append(sshCmd, "-i", sshKeyFile)
-		env = append(env, strings.Join(sshCmd, " "))
-	}
-
-	cmd.Env = env
-}
+func setupGitEnv(cmd *exec.Cmd, sshKeyFile string) {}
 
 // checkGitVersion is used to check the version of git installed on the system
 // against a known minimum version. Returns an error if the installed version
